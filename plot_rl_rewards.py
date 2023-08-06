@@ -5,7 +5,7 @@ import argparse
 # parser = argparse.ArgumentParser()
 # parser.add_argument('-m', '--mode', type=str, required=True,
 #                     help='either "train" or "test"')
-args = "test"
+args = "train"
 dir = "D:/machine_learning_examples/tf2.0"
 
 a = np.load(f'{dir}/rl_trader_rewards/{args}.npy')
