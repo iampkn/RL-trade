@@ -148,10 +148,15 @@ async def send_chart(update: Update, context: ContextTypes.DEFAULT_TYPE):
             }
         ]
     }
-    chart_response = requests.post(
-        chart_url, headers=headers, json=chart_payload)
-    image_buffer = io.BytesIO(chart_response.content)
-    await update.effective_message.reply_photo(photo=image_buffer, caption=query.data)
+    try:
+        chart_response = requests.post(
+            chart_url, headers=headers, json=chart_payload)
+        image_buffer = io.BytesIO(chart_response.content)
+        await update.effective_message.reply_photo(photo=image_buffer, caption=query.data)
+    except Exception as e:
+        print(e)
+        await update.effective_message.reply_text(
+            text="Sorry, meet limit request today. Please try again tomorrow.")
 
 
 # Check trading conditions and send message to Telegram
@@ -211,9 +216,9 @@ async def check_conditions_and_send_message(context: ContextTypes.DEFAULT_TYPE):
     job = context.job
     for symbol in tokens_to_check:
         symbol_data = get_symbol_data(symbol)
-        current_price = float(symbol_data['Close price'])
-        open_price = float(symbol_data["Open price"])
-        current_volume = float(symbol_data["Volume"])
+        current_price = float(symbol_data['Close price'].iloc[0])
+        open_price = float(symbol_data["Open price"].iloc[0])
+        current_volume = float(symbol_data["Volume"].iloc[0])
         ma20_volume = get_ma20_volume(symbol)
 
         if current_price > open_price and current_volume > ma20_volume:
